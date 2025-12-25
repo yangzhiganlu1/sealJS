@@ -1045,10 +1045,6 @@
 
             seal.ext.registerTemplateConfig(ext, "auto_reply_rules", AutoReplyRulesLocal);
 
-            function getCHATGROUP(ext) {
-                const arr = seal.ext.getTemplateConfig(ext, "chat_groups") || [];
-                return arr.map(s => String(s).trim()).filter(s => s.length > 0);
-            }
 
             function getPigId(ext) {
                 return seal.ext.getStringConfig(ext, "botqqid") || "2322534068";
