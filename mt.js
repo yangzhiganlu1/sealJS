@@ -1232,7 +1232,7 @@
                         fromUserId == FISH_BOT_USERID
                     ) {
                         if (FishWords.some(word => text.includes(word))){
-                            seal.replyToSender(ctx,msg,`检测到雪猪的鱼上钩`)
+                            seal.replyToSender(ctx,msg,`检测到雪雪的鱼上钩`)
                             const ep = seal.getEndPoints()[0];
                             const fakeMsg = seal.newMessage();
                             fakeMsg.messageType = "private";
