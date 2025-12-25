@@ -430,7 +430,7 @@
         } catch (e) {
             // ignore
         }
-    }
+    } 
 
     function dateStrFromTs(ts) {
         const d = new Date(ts * 1000);
