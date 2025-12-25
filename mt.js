@@ -3,7 +3,7 @@
 // @name         早安/赞助/呼风唤雨/赚钱/收入/雪王插件
 // @author       雪王 & 蜜桃
 // @version      1.0.1
-// @description  1225,修改:圣诞为什么要加班
+// @description  1225,修改:圣诞为什么要加班，修复了好多好多未知问题
 // @timestamp    1766544987
 // @license      MIT
 // ==/UserScript==
@@ -14,6 +14,9 @@
     const STORAGE_KEY_Morning = "morning";
     const STORAGE_KEY_ERROR = "error";
     const STORAGE_KEY_SPONSOR = "sponsor";
+    const STORAGE_KEY_FISH_CD_TIMERS = "fish_cd_timers";
+    const STORAGE_KEY_MONEY = "money_";
+    const STORAGE_KEY_OTHERS_MONEY = "others_money";
 
     const AutoReplyRulesLocal = [
         JSON.stringify({
@@ -409,6 +412,7 @@
         })
 
     ];
+    
 
     function storageGet(ext, key, defaultVal) {
         try {
@@ -426,6 +430,14 @@
         } catch (e) {
             // ignore
         }
+    }
+
+    function dateStrFromTs(ts) {
+        const d = new Date(ts * 1000);
+        const Y = d.getFullYear();
+        const M = String(d.getMonth() + 1).padStart(2, "0");
+        const D = String(d.getDate()).padStart(2, "0");
+        return `${Y}-${M}-${D}`;
     }
 
     function textMentionsSbQQ(text, qq) {
@@ -456,6 +468,24 @@
         return msgList[Math.floor(Math.random() * msgList.length)]
     }
 
+    function pickMessageWithWeighting(msgList) {
+        if (!msgList || msgList.length === 0) return "";
+        if (msgList.length === 1) return msgList[0][0];
+
+        let total = 0;
+        for (const m of msgList) {
+            total += m[1] || 1;
+        }
+        let r = Math.random() * total;
+
+        for (const m of msgList) {
+            const w = m[1] || 1;
+            if (r < w) return m[0];
+            r -= w;
+        }
+        return msgList[0][0];
+    }
+
     function printCheckDict(dict) {
         let output = "今日早安的宝宝有：";
         for (let [id, card] of Object.entries(dict).sort((a, b) => a[1].ts - b[1].ts)) {
@@ -463,6 +493,59 @@
             output += `\n『${time.getHours()}:${time.getMinutes()}』的「${card.nickname}」`;
         }
         return output;
+    }
+
+    function nowTs() {
+        return Math.floor(Date.now() / 1000);
+    }
+
+    function cleanupOldTimers(list, expireSec = 3600) {
+        const now = nowTs();
+        return list.filter(e => now - e.triggerTs <= expireSec);
+    }
+
+    function extractFirstNumericId(text) {
+        if (!text) return null;
+        // 先找 QQ:12345
+        const mQQ = text.match(/QQ[:：]\s*([1-9][0-9]{4,})/i);
+        if (mQQ) return mQQ[1];
+        // 再找 CQ 或 at 格式里出现的数字，如 [CQ:at,qq=123]
+        const mAt = text.match(/qq\s*=\s*([1-9][0-9]{4,})/i);
+        if (mAt) return mAt[1];
+        // 最后找裸数字（第一个连续 5+ 位数字）
+        const mNum = text.match(/([1-9][0-9]{4,})/);
+        if (mNum) return mNum[1];
+        return null;
+    }
+
+    function matchRule(text, cond) {
+        if (!text) return false;
+        if (!cond || !cond.matchType) return false;
+
+        switch (cond.matchType) {
+            case "matchExact":
+                return text === cond.value;
+
+            case "matchContains":
+                return text.includes(cond.value);
+
+            case "matchNotContains":
+                return !text.includes(cond.value);
+
+            case "matchRegex":
+                try {
+                    const reg = new RegExp(cond.value);
+                    return reg.test(text);
+                } catch (e) {
+                    return false;
+                }
+
+            case "matchFuzzy": // 等同包含
+                return text.includes(cond.value);
+
+            default:
+                return false;
+        }
     }
 
     function main() {
@@ -519,7 +602,7 @@
 
                                 }
                                 if (arg1 in dictSponsor) {
-                                    seal.replyToSender(ctx, msg, `小雪记住了~${arg1}之前赞助了${dictSponsor[arg1]}r，刚刚又赞助了${value}r，一共赞助了${dictSponsor[arg1].value + value}r`);
+                                    seal.replyToSender(ctx, msg, `小雪记住了~${arg1}之前赞助了${dictSponsor[arg1]}r，刚刚又赞助了${value}r，一共赞助了${dictSponsor[arg1] + value}r`);
                                     dictSponsor[arg1] += value;
                                 } else {
                                     seal.replyToSender(ctx, msg, `小雪记住了~${arg1}刚刚赞助了${value}r`);
@@ -817,6 +900,7 @@
             seal.ext.register(ext)
 
             seal.ext.registerTask(ext, "cron", "*/5 * * * *", (()=>{
+                const FISH_BOT_USERID = getBotId(ext)
                 let timers = storageGet(ext, STORAGE_KEY_FISH_CD_TIMERS, []);
                 timers = cleanupOldTimers(timers);
 
@@ -923,6 +1007,11 @@
                 ],
                 "非早安时段触发早安的回复"
             );
+            seal.ext.registerStringConfig(
+                ext,
+                "fish_bot_id",
+                "3889686462"
+            );
             seal.ext.registerIntConfig(ext, "morning_start_time", 7, "早安时段开始时间(小时)");
             seal.ext.registerIntConfig(ext, "morning_end_time", 12, "早安时段结束时间(小时)");
             seal.ext.registerIntConfig(ext, "settleMentHour", 9, "结算时间(小时)");
@@ -1005,6 +1094,10 @@
                 return message.replaceAll("{nickname}", nickname);
             }
 
+            function getBotId(ext) {
+                return seal.ext.getStringConfig(ext, "fish_bot_id") || "3889686462";
+            }
+
             function getCHATGROUP(ext) {
                 const arr = seal.ext.getTemplateConfig(ext, "chat_groups") || [];
                 return arr.map(s => String(s).trim()).filter(s => s.length > 0);
@@ -1031,6 +1124,12 @@
                 }
 
                 return rules;
+            }
+
+            function getFISHGROUP(ext) {
+                const arr = seal.ext.getTemplateConfig(ext, "fish_group") || [];
+                // TemplateConfig 是数组，每个元素就是一行
+                return arr.map(s => String(s).trim()).filter(s => s.length > 0);
             }
 
             let CHATGROUPS = getCHATGROUP(ext);
@@ -1066,7 +1165,7 @@
                     MorningRepeatWords = getMorningRepeatWords(ext);
                     MorningFailWords = getMorningFailWords(ext);
                     FishWords = getFISHWORDS(ext);
-                    AutoReplyRules = loadAutoReplyRules(ext);
+                    
                     const text = msg.message || "";
                     const sender = msg.sender || {};
                     const fromUserIdRaw = sender.userId || "";
@@ -1119,7 +1218,7 @@
                                         groupId: fromUserGroupID
                                     }
                                     dictTodayMorning[fromUserId] = card;
-                                    seal.replyToSender(ctx, msg, `${replaceNickname(pickMessage(MorningSuccessWords), nickname)}\n————————\n你是今天第${dictMorning.keys().length}个说早安的宝宝\n————————\n${printCheckDict(dictTodayMorning)}`);
+                                    seal.replyToSender(ctx, msg, `${replaceNickname(pickMessage(MorningSuccessWords), nickname)}\n————————\n你是今天第${Object.keys(dictTodayMorning).length}个说早安的宝宝\n————————\n${printCheckDict(dictTodayMorning)}`);
                                     dictMorning[now.toLocaleDateString()] = dictTodayMorning;
                                     storageSet(ext, STORAGE_KEY_Morning, dictMorning);
                                 }
@@ -1273,7 +1372,7 @@
 
                             // 命中规则 → 执行结果
                             for (const res of rule.results) {
-                                const msgToSend = pickMessage(res.message);
+                                const msgToSend = pickMessageWithWeighting(res.message);
 
                                 if (res.delay > 0) {
                                     setTimeout(() => seal.replyToSender(ctx, msg, msgToSend), res.delay * 1000);

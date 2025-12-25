@@ -5,7 +5,7 @@
 // @version      1.0.28
 // @description  1223,修改:新增了自启动的轮转
 // @timestamp    1733625600
-// @license      MIT
+// @license      MIT 
 // ==/UserScript==
 
 (() => {
@@ -652,8 +652,8 @@ id：${top.id}
                             const todays = records.filter(r => r.date === today);
                             todays.sort((a, b) => b.healed - a.healed);
                             if ((key == BOTQQID) && (recovered != todays[0].healed)){
-                                pendingEntry.step == 2;
-                                pendingEntry.tribute == todays[0].tribute;
+                                pendingEntry.step = 2;
+                                pendingEntry.tribute = todays[0].tribute;
                             }
                             if (pendingEntry && pendingEntry.step == 2) {
                                 const rec = {
