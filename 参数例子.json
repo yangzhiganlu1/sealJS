@@ -1,0 +1,65 @@
+{
+    "ctx": {
+        "group": {
+            "active": true,
+            "groupId": "QQ-Group:1041391088",
+            "guildId": "",
+            "channelId": "",
+            "groupName": "小团体❍人机群",
+            "cocRuleIndex": 3,
+            "logCurName": "",
+            "logOn": false,
+            "recentDiceSendTime": 1764920834,
+            "showGroupWelcome": false,
+            "groupWelcomeMessage": "",
+            "enteredTime": 0,
+            "inviteUserId": ""
+        },
+        "player": {
+            "name": "小蜜爬Koala 1123不是罕见",
+            "userId": "QQ:1220450657",
+            "lastCommandTime": 1764920817,
+            "autoSetNameTemplate": ""
+        },
+        "endPoint": {
+            "baseInfo": {
+                "id": "1380d17b-92b6-4802-93c3-9443e55bf4f5",
+                "nickname": "Snow King Baby",
+                "state": 1,
+                "userId": "QQ:2322534068",
+                "groupNum": 11,
+                "cmdExecutedNum": 5,
+                "cmdExecutedLastTime": 1764920834,
+                "onlineTotalTime": 0,
+                "platform": "QQ",
+                "enable": true
+            },
+            "id": "1380d17b-92b6-4802-93c3-9443e55bf4f5",
+            "nickname": "Snow King Baby",
+            "state": 1,
+            "userId": "QQ:2322534068",
+            "groupNum": 11,
+            "cmdExecutedNum": 5,
+            "cmdExecutedLastTime": 1764920834,
+            "onlineTotalTime": 0,
+            "platform": "QQ",
+            "enable": true
+        },
+        "isCurGroupBotOn": true,
+        "isPrivate": false,
+        "commandHideFlag": "",
+        "privilegeLevel": 50,
+        "delegateText": ""
+    },
+    "msg": {
+        "time": 1764920850,
+        "messageType": "group",
+        "groupId": "QQ-Group:1041391088",
+        "guildId": "",
+        "channelId": "",
+        "sender": {
+            "nickname": "小蜜爬Koala 1123我要天赐！！！",
+            "userId": "QQ:1220450657"
+        },
+        "message":"你遇见一群看似是紫色火精灵的东西在一个巨大的篝火堆旁起舞。精灵们将小小的骨头和不知什么碎片丢进火中，每一次都会爆发出炫目的火焰。当你靠近时，所有精灵都转向了你，似乎在期待着些什么……
+(献上贡品)","rawId":-315436640,"platform":"QQ","segment":[]}}
