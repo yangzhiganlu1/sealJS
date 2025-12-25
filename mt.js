@@ -1235,11 +1235,12 @@
                             seal.replyToSender(ctx,msg,`检测到雪雪的鱼上钩`)
                             const ep = seal.getEndPoints()[0];
                             const fakeMsg = seal.newMessage();
+                            fakeMsg.messageType = "private";
+                            fakeMsg.platform = "QQ";
                             fakeMsg.sender = {
                                 nickname: "猪",
-                                userId: "1220450657"
+                                userId: "QQ:1220450657"
                             };
-                            fakeMsg.messageType = "private";
                             const fakeCtx = seal.createTempCtx(ep,fakeMsg);
                             seal.replyToSender(fakeCtx,fakeMsg,`[CQ:shake]`);
                         }
