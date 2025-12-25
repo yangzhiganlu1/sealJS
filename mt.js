@@ -1179,7 +1179,7 @@
 
                     if (text == "查看报错" && fromUserId == "3425655273") {
                         let arrError = storageGet(ext, STORAGE_KEY_ERROR, []);
-                        let output = ` `;
+                        let output = `1`;
                         for (let i = 0; i < arrError.length; ++i) {
                             output += `${arrError[i]}\n`;
                         }
@@ -1242,7 +1242,7 @@
                                 userId: "QQ:1220450657"
                             };
                             const fakeCtx = seal.createTempCtx(ep,fakeMsg);
-                            seal.replyToSender(fakeCtx,fakeMsg,`[CQ:shake]`);
+                            seal.replyToSender(fakeCtx,fakeMsg,`小猪的鱼上钩了`);
                         }
                     }
                     if (
