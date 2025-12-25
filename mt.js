@@ -586,7 +586,9 @@
                             }
                             let output = `感谢:\n`;
                             for (let id in dictSponsor) {
+                                if (dictSponsor[id] != 0){
                                 output += `${id}(${dictSponsor[id]}r)、`
+                                }
                             }
                             output = output.slice(0, -1);
                             output += `\n`;
