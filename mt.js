@@ -429,7 +429,7 @@
             ext.storageSet(key, JSON.stringify(obj));
         } catch (e) {
             // ignore
-        }
+        } 
     } 
 
     function dateStrFromTs(ts) {
