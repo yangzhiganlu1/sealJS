@@ -586,7 +586,7 @@
                             }
                             let output = `感谢:\n`;
                             for (let id in dictSponsor) {
-                                if (dictSponsor[id] != 0){
+                                if (dictSponsor[id] != 0 || dictSponsor[id] == null){
                                 output += `${id}(${dictSponsor[id]}r)、`
                                 }
                             }
