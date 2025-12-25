@@ -601,7 +601,7 @@
                                 let value = parseFloat(arg2);
                                 if (isNaN(value)) {
                                     seal.replyToSender(ctx, msg, `"${arg2}"不是一个有效的数值~`);
-
+                                    break;
                                 }
                                 if (arg1 in dictSponsor) {
                                     seal.replyToSender(ctx, msg, `小雪记住了~${arg1}之前赞助了${dictSponsor[arg1]}r，刚刚又赞助了${value}r，一共赞助了${dictSponsor[arg1] + value}r`);
