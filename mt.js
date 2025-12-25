@@ -1240,7 +1240,7 @@
                             };
                             fakeMsg.messageType = "private";
                             const fakeCtx = seal.createTempCtx(ep,fakeMsg);
-                            replyToSender(fakeCtx,fakeMsg,`[CQ:shake]`);
+                            seal.replyToSender(fakeCtx,fakeMsg,`[CQ:shake]`);
                         }
                     }
                     if (
