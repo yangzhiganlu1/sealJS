@@ -1225,26 +1225,26 @@
                             }
                         }
                     }
-                    if (
-                        text &&
-                        textMentionsSbQQ(text, "1220450657") &&
-                        FISHGROUP.includes(fromUserGroupID) &&
-                        fromUserId == FISH_BOT_USERID
-                    ) {
-                        if (FishWords.some(word => text.includes(word))){
-                            seal.replyToSender(ctx,msg,`检测到雪雪的鱼上钩`)
-                            const ep = seal.getEndPoints()[0];
-                            const fakeMsg = seal.newMessage();
-                            fakeMsg.messageType = "private";
-                            fakeMsg.platform = "QQ";
-                            fakeMsg.sender = {
-                                nickname: "猪",
-                                userId: "QQ:1220450657"
-                            };
-                            const fakeCtx = seal.createTempCtx(ep,fakeMsg);
-                            seal.replyToSender(fakeCtx,fakeMsg,`小猪的鱼上钩了`);
-                        }
-                    }
+                    // if (
+                    //     text &&
+                    //     textMentionsSbQQ(text, "1220450657") &&
+                    //     FISHGROUP.includes(fromUserGroupID) &&
+                    //     fromUserId == FISH_BOT_USERID
+                    // ) {
+                    //     if (FishWords.some(word => text.includes(word))){
+                    //         seal.replyToSender(ctx,msg,`检测到雪雪的鱼上钩`)
+                    //         const ep = seal.getEndPoints()[0];
+                    //         const fakeMsg = seal.newMessage();
+                    //         fakeMsg.messageType = "private";
+                    //         fakeMsg.platform = "QQ";
+                    //         fakeMsg.sender = {
+                    //             nickname: "猪",
+                    //             userId: "QQ:1220450657"
+                    //         };
+                    //         const fakeCtx = seal.createTempCtx(ep,fakeMsg);
+                    //         seal.replyToSender(fakeCtx,fakeMsg,`小猪的鱼上钩了`);
+                    //     }
+                    // }
                     if (
                         text &&
                         textMentionsSbQQ(text, BOTQQID)
