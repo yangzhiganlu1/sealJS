@@ -1244,7 +1244,7 @@
                     //         const fakeCtx = seal.createTempCtx(ep,fakeMsg);
                     //         seal.replyToSender(fakeCtx,fakeMsg,`小猪的鱼上钩了`);
                     //     }
-                    // }
+                    // } 
                     if (
                         text &&
                         textMentionsSbQQ(text, BOTQQID)
