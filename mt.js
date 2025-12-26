@@ -1068,6 +1068,8 @@
                             } else {
                                 seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满~`)
                             }
+                            dictPlayer[Uid] = player;
+                            storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
                             break;
                     }
                 } catch(e) {
