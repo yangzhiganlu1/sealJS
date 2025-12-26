@@ -1034,6 +1034,9 @@
                                 seal.replyToSender(ctx, msg, `已关闭提醒`);
                                 if (player.timer != -1){
                                     clearTimeout(player.timer)
+                                    player.timer = -1
+                                    dictPlayer[Uid] = player;
+                                    storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
                                 }
                             }
                             break;
@@ -1061,12 +1064,17 @@
                             const target = new Date(Date.now() + time);
                             if (player.timer != -1){
                                 clearTimeout(player.timer)
+                                player.timer = -1;
+                                dictPlayer[Uid] = player;
+                                storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
                             }
                             if (player.re){
                                 seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满，小雪会提醒你的~`)
                                 player.timer = setTimeout(() => {
                                     seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 小雪提醒你，体力要回满喽~`)
                                     player.timer = -1;
+                                    dictPlayer[Uid] = player;
+                                    storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
                                 }, time - 360000);
                             } else {
                                 seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满~`)
