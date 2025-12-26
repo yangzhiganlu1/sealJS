@@ -945,7 +945,7 @@ const seal = {
                             }
                             let output = `感谢:\n`;
                             for (let id in dictSponsor) {
-                                if (dictSponsor[id] != 0 || dictSponsor[id] == null){
+                                if (dictSponsor[id] != 0 && dictSponsor[id] != null){
                                 output += `${id}(${dictSponsor[id]}r)、`
                                 }
                             }
@@ -1289,7 +1289,7 @@ const seal = {
 .体力 <当前体力>         【计算需要多久回满体力】
 .体力 max <体力上限>     【设置体力上限】
 .体力 sp <体力回复速度>  【设置体力回复速度，默认为1，例:你有+50%回复速度就 .体力 sp 1.5】
-.体力 re                【开/关满体力提示，打开的话使用.体力 <当前体力>会在满体力的时候提示你】
+.体力 re                【开/关满体力提示，打开的话使用.体力 <当前体力>会在快满体力的时候提醒你】
 `;
             cmdStamina.solve = (ctx, msg, cmdArgs) => {
                 try {
