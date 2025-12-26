@@ -974,7 +974,7 @@
                     let dictPlayer = storageGet(ext,STORAGE_KEY_STAMINA,{});
                     let player;
                     if (Uid in dictPlayer){
-                        player = dictPlayer[uid];
+                        player = dictPlayer[Uid];
                     } else {
                         player = {
                             max: 0,
