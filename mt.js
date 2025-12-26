@@ -1085,16 +1085,16 @@
                             console.log(`12`)
                             if (player.re){
                                 console.log(`13`)
-                                seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满，小雪会提醒你的~`)
+                                seal.replyToSender(ctx,msg,`[CQ:at,qq=${Uid}] 体力预计在${target.toLocaleTimeString()}回满，小雪会提醒你的~`)
                                 player.timer = setTimeout(() => {
-                                    seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 小雪提醒你，体力要回满喽~`)
+                                    seal.replyToSender(ctx,msg,`[CQ:at,qq=${Uid}] 小雪提醒你，体力要回满喽~`)
                                     // player.timer = -1;
                                     // dictPlayer[Uid] = player;
                                     // storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
                                 }, time - 359999);
                                 console.log(`14`)
                             } else {
-                                seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满~`)
+                                seal.replyToSender(ctx,msg,`[CQ:at,qq=${Uid}] 体力预计在${target.toLocaleTimeString()}回满~`)
                             }
                             dictPlayer[Uid] = player;
                             storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
