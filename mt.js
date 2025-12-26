@@ -18,7 +18,8 @@
     const STORAGE_KEY_FISH_CD_TIMERS = "fish_cd_timers";
     const STORAGE_KEY_MONEY = "money_";
     const STORAGE_KEY_OTHERS_MONEY = "others_money";
-    const STORAGE_KEY_TIMEOUT = "timeout_record"
+    const STORAGE_KEY_TIMEOUT = "timeout_record";
+    const STORAGE_KEY_STAMINA = "stamina";
     const AutoReplyRulesLocal = [
         JSON.stringify({
             enable: true,
@@ -969,24 +970,108 @@
                     const arg1 = cmdArgs.getArgN(1) || "";
                     const sub = ("" + arg1).trim().toLowerCase();
                     const fromUserGroupID = normalizeUid(ctx.group.groupId);
+                    const Uid = normalizeUid(msg.sender.userId);
+                    let dictPlayer = storageGet(ext,STORAGE_KEY_STAMINA,{});
+                    let player;
+                    if (Uid in dictPlayer){
+                        player = dictPlayer[uid];
+                    } else {
+                        player = {
+                            max: 0,
+                            speed: 1.0,
+                            re: false,
+                            timer: -1
+                        }
+                    }
                     if (fromUserGroupID != "1041391088"){
                         return;
                     }
                     switch (sub) {
                         case "":
-                        case "help":{
+                        case "help":
                             const ret = seal.ext.newCmdExecuteResult(true);
                             ret.showHelp = true;
                             return ret;
-                        }
                         case "max":{
-                            
+                            const arg2 = cmdArgs.getArgN(2) || "";
+                            let value = parseInt(arg2);
+                            if (isNaN(value)){
+                                seal.replyToSender(ctx, msg, `"${arg2}"不是一个有效的数值~`);
+                                break;
+                            }
+                            if (value < 1){
+                                seal.replyToSender(ctx, msg, `体力上限不能小于1~`);
+                                break;
+                            }
+                            player.max = value;
+                            dictPlayer[Uid] = player;
+                            storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
+                            break;
+                        }
+                        case "sp":{
+                            const arg2 = cmdArgs.getArgN(2) || "";
+                            let value = parseFloat(arg2);
+                            if (isNaN(value)){
+                                seal.replyToSender(ctx, msg, `"${arg2}"不是一个有效的数值~`);
+                                break;
+                            }
+                            if (value <= 0){
+                                seal.replyToSender(ctx, msg, `体力回复速度必须为正数~`);
+                                break;
+                            }
+                            player.speed = value;
+                            dictPlayer[Uid] = player;
+                            storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
+                            break;
+                        }
+                        case "re":{
+                            player.re = !player.re;
+                            dictPlayer[Uid] = player;
+                            storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
+                            if (player.re){
+                                seal.replyToSender(ctx, msg, `已开启提醒`);
+                            } else {
+                                seal.replyToSender(ctx, msg, `已关闭提醒`);
+                            }
                             break;
                         }
                         default:
+                            if (player.max == 0){
+                                seal.replyToSender(ctx, msg, `请先使用 .体力 max <体力上限> 设置体力上限`);
+                                break;
+                            }
+                            let value = parseInt(sub);
+                            if (isNaN(value)){
+                                seal.replyToSender(ctx, msg, `"${sub}"不是一个有效的数值~`);
+                                break;
+                            }
+                            if (value < 0){
+                                seal.replyToSender(ctx, msg, `当前体力不能小于0~`);
+                                break;
+                            }
+                            if (value >= player.max){
+                                seal.replyToSender(ctx, msg, `当前体力必须小于体力上限(${player.max})~`);
+                                break;
+                            }
+                            const stamina = player.max - value;
+                            const time = stamina*360000/player.speed;
+                            const target = new Date(Date.now() + time);
+                            if (player.timer != -1){
+                                clearTimeout(player.timer)
+                            }
+                            if (player.re){
+                                seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满，小雪会提醒你的~`)
+                                player.timer = setTimeout(() => {
+                                    seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 小雪提醒你，体力要回满喽~`)
+                                    player.timer = -1;
+                                }, time - 360000);
+                            } else {
+                                seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满~`)
+                            }
                             break;
                     }
                 } catch(e) {
+                    console.log(e);
                     let arrError = storageGet(ext, STORAGE_KEY_ERROR, []);
                     arrError.push(`${Date.now().toLocaleString()} - ${e}`);
                     storageSet(ext, STORAGE_KEY_ERROR, arrError);
