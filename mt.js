@@ -567,14 +567,21 @@
         storageSet(ext,STORAGE_KEY_TIMEOUT,record);
     }
 
-    function clearTimerId(){
-
+    function clearTimerId(ext){
+        let dict = storageGet(ext,STORAGE_KEY_STAMINA,{});
+        if (dict != null){
+            for (let Uid in dict){
+                dict[Uid].timer = -1;
+            }
+        }
+        storageSet(ext,STORAGE_KEY_STAMINA,dict)
     }
 
 
     function main() {
         let inactive = true;
         let ext = seal.ext.find("mt");
+        clearTimerId(ext);
         if (!ext) {
             ext = seal.ext.new("mt", "MT", VERSION);
 
@@ -1070,7 +1077,7 @@
                             const target = new Date(Date.now() + time);
                             console.log(`11`)
                             if (player.timer != -1){
-                                clearTimeout(player.timer)
+                                clearTimeout(player.timer);
                                 player.timer = -1;
                                 dictPlayer[Uid] = player;
                                 storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
