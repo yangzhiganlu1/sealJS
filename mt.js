@@ -1282,6 +1282,46 @@ const seal = {
                 }
             }
 
+            const cmdStamina = seal.ext.newCmdItemInfo();
+            cmdStamina.name = "体力";
+            cmdStamina.help = `.体力help，用法:
+.体力                   【显示提示】
+.体力 <当前体力>         【计算需要多久回满体力】
+.体力 max <体力上限>     【设置体力上限】
+.体力 sp <体力回复速度>  【设置体力回复速度，默认为1，例:你有+50%回复速度就 .体力 sp 1.5】
+.体力 re                【开/关满体力提示，打开的话使用.体力 <当前体力>会在满体力的时候提示你】
+`;
+            cmdStamina.solve = (ctx, msg, cmdArgs) => {
+                try {
+                    switch (sub) {
+                        case "":
+                        case "help":{
+                            const ret = seal.ext.newCmdExecuteResult(true);
+                            ret.showHelp = true;
+                            return ret;
+                        }
+                        case "":{
+                            const record = storageGet(ext,STORAGE_KEY_TIMEOUT,[]);
+                            if (record.length == 0){
+                                seal.replyToSender(ctx,msg,`没有记录`)
+                                break;
+                            } 
+                            let output = '';
+                            for (let i = 0 ; i < record.length ; ++i){
+                                output += record[i];
+                                output += '\n';
+                            }
+                            seal.replyToSender(ctx,msg,output);
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                } catch(e) {
+
+                }
+            }
+
         
             ext.cmdMap['赞助'] = cmdThx;
             ext.cmdMap['雪'] = cmdXueWang;
@@ -1289,6 +1329,8 @@ const seal = {
             ext.cmdMap['收入'] = cmdMoney;
             ext.cmdMap['查看收入'] = cmdMoney;
             ext.cmdMap['赚钱'] = cmdOthersMoney;
+            ext.cmdMap['抛竿记录'] = cmdFishingRecord;
+            ext.cmdMap['体力'] = cmdStamina;
 
 
 
