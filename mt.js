@@ -1032,6 +1032,9 @@
                                 seal.replyToSender(ctx, msg, `已开启提醒`);
                             } else {
                                 seal.replyToSender(ctx, msg, `已关闭提醒`);
+                                if (player.timer != -1){
+                                    clearTimeout(player.timer)
+                                }
                             }
                             break;
                         }
