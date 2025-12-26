@@ -1306,9 +1306,13 @@ const seal = {
                 if (!exists){
                     const ep = seal.getEndPoints()[0];
                     const fakeMsg = seal.newMessage();
-                    fakeMsg.groupId = "1041391088";
+                    fakeMsg.groupId = "QQ-Group:1041391088";
                     fakeMsg.messageType = "group";
                     fakeMsg.platform = "QQ";
+                    fakeMsg.sender = {
+                        nickname: "猪",
+                        userId: "QQ:1220450657"
+                    };
                     const fakeCtx = seal.createTempCtx(ep,fakeMsg);
                     setTimeoutFishing(ext,fakeCtx,fakeMsg,0);
                     setTimeoutFishing(ext,fakeCtx,fakeMsg,1000 * parseInt(seal.ext.getStringConfig(ext, "fish_cd_delay_2"), 10));
