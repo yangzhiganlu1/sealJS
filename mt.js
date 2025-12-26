@@ -8,6 +8,346 @@
 // @license      MIT
 // ==/UserScript==
 
+/**
+ * Seal 框架全局对象（手动 JSDoc 声明，用于类型提示）
+ * @global
+ */
+const seal = {
+
+    // ==================== 消息发送相关 ====================
+
+    /**
+     * 向收到指令的群中发送消息
+     * @param {SealCtx} ctx
+     * @param {SealMsg} msg
+     * @param {string} something - 要发送的内容（支持 CQ 码）
+     */
+    replyGroup: (ctx, msg, something) => {},
+
+    /**
+     * 向指令触发者私信发送消息（类似暗骰）
+     * @param {SealCtx} ctx
+     * @param {SealMsg} msg
+     * @param {string} something - 要发送的内容
+     */
+    replyPerson: (ctx, msg, something) => {},
+
+    /**
+     * 根据消息来源自动回复（群聊回群聊，私聊回私聊）
+     * @param {SealCtx} ctx
+     * @param {SealMsg} msg
+     * @param {string} something - 要发送的内容
+     */
+    replyToSender: (ctx, msg, something) => {},
+
+    // ==================== 群管理相关 ====================
+
+    /**
+     * 封禁群成员（仅部分协议支持，如 walleq）
+     * @param {SealCtx} ctx
+     * @param {string} groupID - 群号
+     * @param {string} userID - 用户 QQ
+     * @param {number} dur - 封禁时长（秒）
+     */
+    memberBan: (ctx, groupID, userID, dur) => {},
+
+    /**
+     * 踢出群成员（仅部分协议支持）
+     * @param {SealCtx} ctx
+     * @param {string} groupID - 群号
+     * @param {string} userID - 用户 QQ
+     */
+    memberKick: (ctx, groupID, userID) => {},
+
+    // ==================== 变量与格式化 ====================
+
+    /**
+     * 格式化内容（经过 rollvm 转译）
+     * @param {SealCtx} ctx
+     * @param {string} something
+     * @returns {string}
+     */
+    format: (ctx, something) => {},
+
+    /**
+     * 调用自定义文案模板
+     * @param {SealCtx} ctx
+     * @param {string} tmplName - 模板名
+     * @returns {string}
+     */
+    formatTmpl: (ctx, tmplName) => {},
+
+    // ==================== 玩家变量（rollvm 个人变量） ====================
+
+    vars: {
+        /**
+         * 获取触发者的 int 型个人变量
+         * @param {SealCtx} ctx
+         * @param {string} varName - 如 "$力量"
+         * @returns {[number, boolean]} [值, 是否成功]
+         */
+        intGet: (ctx, varName) => {},
+
+        /**
+         * 设置触发者的 int 型个人变量
+         * @param {SealCtx} ctx
+         * @param {string} varName
+         * @param {number} value
+         */
+        intSet: (ctx, varName, value) => {},
+
+        /**
+         * 获取触发者的 str 型个人变量
+         * @param {SealCtx} ctx
+         * @param {string} varName
+         * @returns {[string, boolean]} [值, 是否成功]
+         */
+        strGet: (ctx, varName) => {},
+
+        /**
+         * 设置触发者的 str 型个人变量
+         * @param {SealCtx} ctx
+         * @param {string} varName
+         * @param {string} value
+         */
+        strSet: (ctx, varName, value) => {},
+    },
+
+    // ==================== 扩展相关 ====================
+
+    ext: {
+        /**
+         * 创建新的命令项对象
+         * @returns {Object} 命令项（包含 name, help, solve 等属性）
+         */
+        newCmdItemInfo: () => {},
+
+        /**
+         * 创建命令执行结果
+         * @param {boolean} success
+         * @returns {Object}
+         */
+        newCmdExecuteResult: (success) => {},
+
+        /**
+         * 创建新扩展
+         * @param {string} extName
+         * @param {string} extAuthor
+         * @param {string} version
+         * @returns {SealExt}
+         */
+        new: (extName, extAuthor, version) => {},
+
+        /**
+         * 查找扩展
+         * @param {string} extName
+         * @returns {SealExt|null}
+         */
+        find: (extName) => {},
+
+        /**
+         * 注册扩展
+         * @param {SealExt} ext
+         */
+        register: (ext) => {},
+
+        // 配置注册函数（1.4.1+）
+        /**
+         * 注册字符串配置项
+         * @param {SealExt} ext
+         * @param {string} key
+         * @param {string} defaultValue
+         * @param {string} [desc]
+         */
+        registerStringConfig: (ext, key, defaultValue, desc) => {},
+
+        /**
+         * 注册整数配置项
+         * @param {SealExt} ext
+         * @param {string} key
+         * @param {number} defaultValue
+         * @param {string} [desc]
+         */
+        registerIntConfig: (ext, key, defaultValue, desc) => {},
+
+        /**
+         * 注册浮点配置项
+         * @param {SealExt} ext
+         * @param {string} key
+         * @param {number} defaultValue
+         * @param {string} [desc]
+         */
+        registerFloatConfig: (ext, key, defaultValue, desc) => {},
+
+        /**
+         * 注册布尔配置项
+         * @param {SealExt} ext
+         * @param {string} key
+         * @param {boolean} defaultValue
+         * @param {string} [desc]
+         */
+        registerBoolConfig: (ext, key, defaultValue, desc) => {},
+
+        /**
+         * 注册多行文本（template）配置项
+         * @param {SealExt} ext
+         * @param {string} key
+         * @param {string[]} defaultValue
+         * @param {string} [desc]
+         */
+        registerTemplateConfig: (ext, key, defaultValue, desc) => {},
+
+        /**
+         * 注册选项（option）配置项
+         * @param {SealExt} ext
+         * @param {string} key
+         * @param {string} defaultValue
+         * @param {string[]} options
+         */
+        registerOptionConfig: (ext, key, defaultValue, options) => {},
+
+        // 配置获取函数
+        getStringConfig: (ext, key) => {},
+        getIntConfig: (ext, key) => {},
+        getFloatConfig: (ext, key) => {},
+        getBoolConfig: (ext, key) => {},
+        getTemplateConfig: (ext, key) => {},
+        getOptionConfig: (ext, key) => {},
+    },
+
+    // ==================== CoC 规则相关 ====================
+
+    coc: {
+        newRule: () => {},
+        newRuleCheckResult: () => {},
+        registerRule: (rule) => {},
+    },
+
+    // ==================== 牌堆相关 ====================
+
+    deck: {
+        /**
+         * 从牌堆抽卡
+         * @param {SealCtx} ctx
+         * @param {string} deckName
+         * @param {boolean} isShuffle - true 为不放回，false 为放回
+         * @returns {Object} 抽卡结果
+         */
+        draw: (ctx, deckName, isShuffle) => {},
+
+        reload: () => {},
+    },
+
+    // ==================== 上下文与消息相关（1.2+） ====================
+
+    /**
+     * 创建空白消息对象
+     * @returns {SealMsg}
+     */
+    newMessage: () => {},
+
+    /**
+     * 创建临时上下文（常用于发送私聊或模拟消息）
+     * @param {Object} endpoint - seal.getEndPoints()[0]
+     * @param {SealMsg} msg
+     * @returns {SealCtx}
+     */
+    createTempCtx: (endpoint, msg) => {},
+
+    /**
+     * 设置当前玩家的自动名片模板
+     * @param {SealCtx} ctx
+     * @param {string} tmpl
+     */
+    applyPlayerGroupCardByTemplate: (ctx, tmpl) => {},
+
+    /**
+     * 设置当前玩家的名片（1.4.4+）
+     * @param {SealCtx} ctx
+     * @param {string} tmpl
+     */
+    setPlayerGroupCard: (ctx, tmpl) => {},
+
+    // ==================== 游戏系统模板 ====================
+
+    gameSystem: {
+        newTemplate: (jsonStr) => {},
+        newTemplateByYaml: (yamlStr) => {},
+    },
+
+    // ==================== 其他工具函数 ====================
+
+    /**
+     * 获取被 @ 的第 pos 个玩家（pos 从 0 开始）
+     * @param {SealCtx} ctx
+     * @param {Object} cmdArgs
+     * @param {number} pos
+     * @returns {SealCtx|null}
+     */
+    getCtxProxyAtPos: (ctx, cmdArgs, pos) => {},
+
+    /**
+     * 获取第一个被 @ 的玩家（等价于 pos=0）
+     * @param {SealCtx} ctx
+     * @param {Object} cmdArgs
+     * @returns {SealCtx|null}
+     */
+    getCtxProxyFirst: (ctx, cmdArgs) => {},
+
+    /**
+     * 获取所有端点
+     * @returns {Array<Object>}
+     */
+    getEndPoints: () => {},
+
+    /**
+     * 输出日志
+     * @param {...any} args
+     */
+    log: (...args) => {},
+
+    // ==================== 封禁相关（1.4.4+） ====================
+
+    ban: {
+        addBan: (ctx, id, place, reason) => {},
+        addTrust: (ctx, id, place, reason) => {},
+        remove: (ctx, id) => {},
+        getList: () => {},
+        getUser: (id) => {},
+    },
+};
+
+/**
+ * 上下文对象
+ * @typedef {Object} SealCtx
+ * @property {Object} group
+ * @property {string} group.groupId
+ * @property {Object} player
+ * @property {string} player.userId
+ * @property {string} player.name
+ * @property {Object} endPoint
+ * @property {number} privilegeLevel - 权限等级（100 为 master）
+ */
+
+/**
+ * 消息对象
+ * @typedef {Object} SealMsg
+ * @property {string} message
+ * @property {string} messageType - "group" | "private"
+ * @property {string} [groupId]
+ * @property {Object} sender
+ * @property {string} sender.userId
+ * @property {string} sender.nickname
+ */
+
+/**
+ * 扩展对象
+ * @typedef {Object} SealExt
+ * @property {Object} cmdMap
+ * @property {function} storageGet
+ * @property {function} storageSet
+ */
+
 (() => {
 
     const VERSION = "1.0.1";
@@ -17,6 +357,7 @@
     const STORAGE_KEY_FISH_CD_TIMERS = "fish_cd_timers";
     const STORAGE_KEY_MONEY = "money_";
     const STORAGE_KEY_OTHERS_MONEY = "others_money";
+    const STORAGE_KEY_TIMEOUT = "timeout_record"
 
     const AutoReplyRulesLocal = [
         JSON.stringify({
@@ -413,7 +754,6 @@
 
     ];
     
-
     function storageGet(ext, key, defaultVal) {
         try {
             const raw = ext.storageGet(key);
@@ -547,6 +887,25 @@
                 return false;
         }
     }
+    /**
+     *@param {number} timeout - ms
+     */
+    function setTimeoutFishing(ext,ctx,msg,timeout){
+        let record = storageGet(ext,STORAGE_KEY_TIMEOUT,[]);
+        const now = new Date();
+        if (timeout > 0){
+            const target = new Date(now.getTime() + timeout);
+            record.push(`from ${now.toLocaleTimeString()} | target ${target.toLocaleTimeString()}`)
+            setTimeout(() => {
+                seal.replyToSender(ctx,msg,`[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`)
+            }, timeout);
+        } else if (timeout == 0) {
+            record.push(`from ${now.toLocaleTimeString()} | immediately`)
+            seal.replyToSender(ctx,msg,`[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`)
+        }
+        storageSet(ext,STORAGE_KEY_TIMEOUT,record);
+    }
+
 
     function main() {
         let inactive = true;
@@ -889,6 +1248,40 @@
                 return seal.ext.newCmdExecuteResult(true);
             }
         }
+
+        const cmdFishingRecord = seal.ext.newCmdItemInfo();
+            cmdFishingRecord.name = "抛竿记录";
+            cmdFishingRecord.help = `.抛竿记录 查看记录`;
+            cmdFishingRecord.solve = (ctx, msg, cmdArgs) => {
+                try {
+                    switch (sub) {
+                        case "help":{
+                            const ret = seal.ext.newCmdExecuteResult(true);
+                            ret.showHelp = true;
+                            return ret;
+                        }
+                        case "":{
+                            const record = storageGet(ext,STORAGE_KEY_TIMEOUT,[]);
+                            if (record.length == 0){
+                                seal.replyToSender(ctx,msg,`没有记录`)
+                                break;
+                            } 
+                            let output = '';
+                            for (let i = 0 ; i < record.length ; ++i){
+                                output += record[i];
+                                output += '\n';
+                            }
+                            seal.replyToSender(ctx,msg,output);
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                } catch(e) {
+
+                }
+            }
+
         
             ext.cmdMap['赞助'] = cmdThx;
             ext.cmdMap['雪'] = cmdXueWang;
@@ -915,11 +1308,10 @@
                     const fakeMsg = seal.newMessage();
                     fakeMsg.groupId = "1041391088";
                     fakeMsg.messageType = "group";
+                    fakeMsg.platform = "QQ";
                     const fakeCtx = seal.createTempCtx(ep,fakeMsg);
-                    seal.replyToSender(fakeCtx, fakeMsg, `[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
-                    setTimeout(() => {
-                        seal.replyToSender(fakeCtx, fakeMsg, `[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
-                    }, 1000 * parseInt(seal.ext.getStringConfig(ext, "fish_cd_delay_2"), 10));
+                    setTimeoutFishing(ext,fakeCtx,fakeMsg,0);
+                    setTimeoutFishing(ext,fakeCtx,fakeMsg,1000 * parseInt(seal.ext.getStringConfig(ext, "fish_cd_delay_2"), 10));
                 }
             }));
 
@@ -1192,10 +1584,8 @@
 
                     if (fromUserGroupID == "1041391088" && inactive){
                         inactive = false;
-                        seal.replyToSender(ctx, msg, `[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
-                        setTimeout(() => {
-                            seal.replyToSender(ctx, msg, `[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
-                        }, 1000 * parseInt(seal.ext.getStringConfig(ext, "fish_cd_delay_2"), 10));
+                        setTimeoutFishing(ext,ctx,msg,0);
+                        setTimeoutFishing(ext,ctx,msg,1000 * parseInt(seal.ext.getStringConfig(ext, "fish_cd_delay_2"), 10))
                     }
 
                     if (CHATGROUPS.includes(fromUserGroupID)) {
@@ -1283,14 +1673,10 @@
                                     storageSet(ext, STORAGE_KEY_FISH_CD_TIMERS, timers);
 
                                     // 第一次延时
-                                    setTimeout(() => {
-                                        seal.replyToSender(ctx, msg, `[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
-                                    }, (cdSec + delay1) * 1000);
+                                    setTimeoutFishing(ext,ctx,msg,(cdSec + delay1) * 1000);
 
                                     // 第二次延时
-                                    setTimeout(() => {
-                                        seal.replyToSender(ctx, msg, `[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
-                                    }, (cdSec + delay2) * 1000);
+                                    setTimeoutFishing(ext,ctx,msg,(cdSec + delay2) * 1000);
                                 }
                             }
                         }
