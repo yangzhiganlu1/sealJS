@@ -908,8 +908,9 @@
                 }
 
             } catch (error) {
-                seal.replyToSender(ctx, msg, `${error}`);
-                return seal.ext.newCmdExecuteResult(true);
+                let arrError = storageGet(ext, STORAGE_KEY_ERROR, []);
+                arrError.push(`${Date.now().toLocaleString()} - ${e}`);
+                storageSet(ext, STORAGE_KEY_ERROR, arrError);
             }
         }
 
@@ -918,6 +919,12 @@
             cmdFishingRecord.help = `.抛竿记录 查看记录`;
             cmdFishingRecord.solve = (ctx, msg, cmdArgs) => {
                 try {
+                    const arg1 = cmdArgs.getArgN(1) || "";
+                    const sub = ("" + arg1).trim().toLowerCase();
+                    const fromUserGroupID = normalizeUid(ctx.group.groupId);
+                    if (fromUserGroupID != "1041391088"){
+                        return;
+                    }
                     switch (sub) {
                         case "help":{
                             const ret = seal.ext.newCmdExecuteResult(true);
@@ -942,7 +949,9 @@
                             break;
                     }
                 } catch(e) {
-
+                    let arrError = storageGet(ext, STORAGE_KEY_ERROR, []);
+                    arrError.push(`${Date.now().toLocaleString()} - ${e}`);
+                    storageSet(ext, STORAGE_KEY_ERROR, arrError);
                 }
             }
 
@@ -957,6 +966,12 @@
 `;
             cmdStamina.solve = (ctx, msg, cmdArgs) => {
                 try {
+                    const arg1 = cmdArgs.getArgN(1) || "";
+                    const sub = ("" + arg1).trim().toLowerCase();
+                    const fromUserGroupID = normalizeUid(ctx.group.groupId);
+                    if (fromUserGroupID != "1041391088"){
+                        return;
+                    }
                     switch (sub) {
                         case "":
                         case "help":{
@@ -964,7 +979,7 @@
                             ret.showHelp = true;
                             return ret;
                         }
-                        case "":{
+                        case "max":{
                             
                             break;
                         }
@@ -972,7 +987,9 @@
                             break;
                     }
                 } catch(e) {
-
+                    let arrError = storageGet(ext, STORAGE_KEY_ERROR, []);
+                    arrError.push(`${Date.now().toLocaleString()} - ${e}`);
+                    storageSet(ext, STORAGE_KEY_ERROR, arrError);
                 }
             }
 
