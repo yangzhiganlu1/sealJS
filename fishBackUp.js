@@ -497,9 +497,6 @@ id：${top.id}
 
 
 
-            
-
-
             // ======配置项读取======
             function getBotId(ext) {
                 return seal.ext.getStringConfig(ext, "fish_bot_id") || "3889686462";
@@ -525,36 +522,20 @@ id：${top.id}
                 return arr.map(s => String(s).trim()).filter(s => s.length > 0);
             }
             
-            function getSettleMentHour(ext) {
-                return seal.ext.getIntConfig(ext, "settleMentHour") || 9;
-            }
-            function getSettleMentMinute(ext) {
-                return seal.ext.getIntConfig(ext, "settleMentMinute") || 0;
-            }
-
 
             //配置项获取
             let FISH_BOT_USERID = getBotId(ext);
             let FISHGROUP = getFISHGROUP(ext);
             let CHATGROUPS = getCHATGROUP(ext);
-           
             let BANGROUP = getBANGROUP(ext);
             let BOTQQID = getPigId(ext);
-            let settleMentHour = getSettleMentHour(ext);
-            let settleMentMinute = getSettleMentMinute(ext);
-            
-
-
 
             //======关键词触发======
             ext.onNotCommandReceived = (ctx, msg) => {
                 try {
-                    
-
                     FISH_BOT_USERID = getBotId(ext);
                     FISHGROUP = getFISHGROUP(ext);
                     CHATGROUPS = getCHATGROUP(ext);
-                  
                     BANGROUP = getBANGROUP(ext);
                     
                     const text = msg.message || "";
@@ -565,20 +546,14 @@ id：${top.id}
                     const fromName = sender.nickname || "";
                     const senderUidNormalized = normalizeUid(msg.sender && msg.sender.userId);
 
-
                     // 读取 pendingMap
                     const pendingMap = storageGet(ext, STORAGE_KEY_PENDING, {});
-                    
-
-
-
+                
                     //=====监测小咪啪发言=====
                     if (String(senderUidNormalized) === String(FISH_BOT_USERID) && !text.includes('称呼主人')) {
                         //考虑bot自己被艾特的情况
-
                         const recovered = parseFirstRecovery(text);
                         const atUidInReply = extractFirstNumericId(text);
-
                         if (extractFirstNumericId(text) == BOTQQID && (text.indexOf("献上贡品") != -1 || text.indexOf("献上你的贡品，或者…成为贡品。") != -1)) {
                             const records = storageGet(ext, STORAGE_KEY_RECORDS, []);
                             const today = dateStrFromTs(nowTs());
@@ -596,9 +571,7 @@ id：${top.id}
                                 seal.replyToSender(ctx, msg, `[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
                             }, 3000 * delay);
                         }
-
-                        //========================【记录贡品逻辑三步骤START】========================
-                        
+                        //========================【记录贡品逻辑三步骤START】========================                       
                         // --- Step 1: 小咪啪发起（包含“献上贡品”并 @ 用户的数字 QQ） ---
                         if (text && text.indexOf("献上贡品") != -1 ) {
                             // 清理过期 pending
@@ -641,19 +614,18 @@ id：${top.id}
 
                             }
                         }
-
                         // --- Step 3: 小咪啪回复恢复体力（必须 @ 用户 并包含恢复了N体力） ---
-
                         else if (recovered !== null && atUidInReply) {
                             const key = normalizeUid(atUidInReply);
                             const pendingEntry = pendingMap[key];
                             // seal.replyToSender(ctx, msg, ` pendingEntry：${JSON.stringify(pendingEntry)}`);
                             const today = dateStrFromTs(nowTs());
+                            const records = storageGet(ext, STORAGE_KEY_RECORDS, []);
                             const todays = records.filter(r => r.date === today);
                             todays.sort((a, b) => b.healed - a.healed);
                             if ((key == BOTQQID) && (recovered != todays[0].healed)){
                                 pendingEntry.step = 2;
-                                pendingEntry.tribute = todays[0].tribute;
+                                pendingEntry.tribute = todays?todays[0].tribute:'';
                             }
                             if (pendingEntry && pendingEntry.step == 2) {
                                 const rec = {
@@ -665,7 +637,7 @@ id：${top.id}
                                     tribute: pendingEntry.tribute || "",
                                     healed: recovered
                                 };
-                                const records = storageGet(ext, STORAGE_KEY_RECORDS, []);
+                                
                                 records.unshift(rec);
                                 storageSet(ext, STORAGE_KEY_RECORDS, records);
                                 delete pendingMap[key];
