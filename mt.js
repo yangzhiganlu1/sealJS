@@ -567,6 +567,10 @@
         storageSet(ext,STORAGE_KEY_TIMEOUT,record);
     }
 
+    function clearTimerId(){
+
+    }
+
 
     function main() {
         let inactive = true;
@@ -1033,9 +1037,9 @@
                             } else {
                                 seal.replyToSender(ctx, msg, `已关闭提醒`);
                                 if (player.timer != -1){
-                                    console.log(1)
+                                    console.log(`1`)
                                     clearTimeout(player.timer);
-                                    console.log(2)
+                                    console.log(`2`)
                                     player.timer = -1;
                                     dictPlayer[Uid] = player;
                                     storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
@@ -1064,16 +1068,16 @@
                             const stamina = player.max - value;
                             const time = stamina*360000/player.speed;
                             const target = new Date(Date.now() + time);
-                            console.log(11)
+                            console.log(`11`)
                             if (player.timer != -1){
                                 clearTimeout(player.timer)
                                 player.timer = -1;
                                 dictPlayer[Uid] = player;
                                 storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
                             }
-                            console.log(12)
+                            console.log(`12`)
                             if (player.re){
-                                console.log(13)
+                                console.log(`13`)
                                 seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满，小雪会提醒你的~`)
                                 player.timer = setTimeout(() => {
                                     seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 小雪提醒你，体力要回满喽~`)
@@ -1081,13 +1085,13 @@
                                     dictPlayer[Uid] = player;
                                     storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
                                 }, time - 359999);
-                                console.log(14)
+                                console.log(`14`)
                             } else {
                                 seal.replyToSender(ctx,msg,`[CQ:at,qq:${Uid}] 体力预计在${target.toLocaleTimeString()}回满~`)
                             }
                             dictPlayer[Uid] = player;
                             storageSet(ext,STORAGE_KEY_STAMINA,dictPlayer);
-                            console.log(15)
+                            console.log(`15`)
                             break;
                     }
                 } catch(e) {
