@@ -1540,6 +1540,24 @@
                             storageSet(ext,STORAGE_KEY_MONEY,arrMoney);
                         }
                     }
+
+                    if (
+                        text &&
+                        textMentionsSbQQ(text, "1220450657")
+                        &&
+                        fromUserGroupID == "1041391088"
+                    ) {
+                        let match = text.match(/【双生】CD中\((\d+)秒\)/);
+                        if (match) {
+                            const cdSec = parseInt(match[1], 10);
+                            if (!isNaN(cdSec)) {
+                                setTimeout(() => {
+                                    seal.replyToSender(ext,ctx,`[CQ:at,qq="1220450657"] 小猪的双生cd好了`);
+                                }, cdSec*1000);
+                            }
+                        }
+                    }
+
                     const atUid = extractFirstNumericId(text);
                     if (text && fromUserGroupID == "1041391088" && atUid && atUid != BOTQQID){
                         const match = text.match(/金币不足9999999喵\n当前金币：(\d+)/);
