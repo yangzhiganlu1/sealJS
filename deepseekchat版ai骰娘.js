@@ -144,7 +144,9 @@ if (!seal.ext.find('deepseekai')) {
     ext.onNotCommandReceived = (ctx, msg) => {
         const allowedGroups = seal.ext.getTemplateConfig(ext, "允许使用群号");
         const allowedPrivateChats = seal.ext.getTemplateConfig(ext, "允许使用私聊");
-        if (msg.sender.userId == "QQ:3889686462")
+        if (msg.sender.userId == "QQ:3889686462"){
+            return;
+        }
         
         // 判断是否为群聊并检查是否在允许的群号列表中
         if (!ctx.isPrivate) {
