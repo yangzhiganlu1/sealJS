@@ -15,8 +15,8 @@ if (!seal.ext.find('deepseekai')) {
     const ext = seal.ext.new('deepseekai', 'baiyu', '1.3.2');
     seal.ext.register(ext);
     // 注册配置项
-    seal.ext.registerStringConfig(ext, "大模型url", "https://api.deepseek.com/v1/chat/completions", "请在大模型开放平台手册获取"); 
-    seal.ext.registerStringConfig(ext, "大模型模型名", "deepseek-chat", "请在大模型开放平台手册获取"); 
+    seal.ext.registerStringConfig(ext, "大模型url", "https://api.deepseek.com/v1/chat/completions", "请在大模型开放平台手册获取");
+    seal.ext.registerStringConfig(ext, "大模型模型名", "deepseek-chat", "请在大模型开放平台手册获取");
     seal.ext.registerStringConfig(ext, "你的APIkeys（请在deepseek开放平台获取并确定有token数）", "yours"); // 存储访问令牌
     seal.ext.registerStringConfig(ext, "最大回复tokens数（防止回复过长）", "100"); // 存储最大回复tokens数
     seal.ext.registerStringConfig(ext, "存储上下文对话限制轮数", "4"); // 存储上下文对话限制
@@ -26,7 +26,7 @@ if (!seal.ext.find('deepseekai')) {
     seal.ext.registerTemplateConfig(ext, "允许使用私聊", ["QQ:111111", "QQ:222222"], "限制允许接收消息的私聊，不配置就是全部允许");
 
     const DEEPSEEK_API_URL = seal.ext.getStringConfig(ext, "大模型url");
-    const DEEPSEEK_API_MODEL = seal.ext.getStringConfig(ext, "大模型模型名");    
+    const DEEPSEEK_API_MODEL = seal.ext.getStringConfig(ext, "大模型模型名");
     const ACCESS_TOKEN = seal.ext.getStringConfig(ext, "你的APIkeys（请在deepseek开放平台获取并确定有token数）");
     const MAX_REPLY_TOKENS = parseInt(seal.ext.getStringConfig(ext, "最大回复tokens数（防止回复过长）"));
     const MAX_CONTEXT_LENGTH = parseInt(seal.ext.getStringConfig(ext, "存储上下文对话限制轮数")) * 2; // 每轮包括用户和AI的两条消息
@@ -65,8 +65,8 @@ if (!seal.ext.find('deepseekai')) {
         async chat(text, ctx, msg) {
             let user = msg.sender.nickname;
             let userId = msg.sender.userId;
-            this.context.push({"role": "user", "content": "from " + user + "（" + userId + "）" + ": " + text});
-            
+            this.context.push({ "role": "user", "content": "from " + user + "（" + userId + "）" + ": " + text });
+
             // 确保上下文长度不超过最大限制
             while (this.context.length > MAX_CONTEXT_LENGTH) {
                 // 确保始终保留 systemContext
@@ -121,10 +121,10 @@ if (!seal.ext.find('deepseekai')) {
 
                 if (data.choices && data.choices.length > 0) {
                     let reply = data.choices[0].message.content;
-                    this.context.push({"role": "assistant", "content": reply});
+                    this.context.push({ "role": "assistant", "content": reply });
                     reply = reply.replace(/from .+?: /g, '');
                     let atReply;
-                    if (msg.messageType == "group"){
+                    if (msg.messageType == "group") {
                         atReply = `[CQ:at,qq=${normalizeUid(userId)}]` + reply;
                     } else {
                         atReply = reply;
@@ -144,8 +144,8 @@ if (!seal.ext.find('deepseekai')) {
     ext.onNotCommandReceived = (ctx, msg) => {
         const allowedGroups = seal.ext.getTemplateConfig(ext, "允许使用群号");
         const allowedPrivateChats = seal.ext.getTemplateConfig(ext, "允许使用私聊");
-        if (msg.sender.userId == "QQ:3889686462")
-        
+        if (msg.sender.userId == "QQ:3889686462") return;
+
         // 判断是否为群聊并检查是否在允许的群号列表中
         if (!ctx.isPrivate) {
             const allGroupsAllowed = !allowedGroups || allowedGroups.length === 0 || (allowedGroups.length === 1 && allowedGroups[0] === "");
@@ -165,36 +165,36 @@ if (!seal.ext.find('deepseekai')) {
             }
         } else {
             console.log(`不在允许列表中: ${ctx.isPrivate ? `用户ID: ${ctx.player.userId}` : `群号: ${ctx.group.groupId}`}`);
-        }        
+        }
 
-    function extractFirstNumericId(text) {
-        if (!text) return null;
-        // 先找 QQ:12345
-        const mQQ = text.match(/QQ[:：]\s*([1-9][0-9]{4,})/i);
-        if (mQQ) return mQQ[1];
-        // 再找 CQ 或 at 格式里出现的数字，如 [CQ:at,qq=123]
-        const mAt = text.match(/qq\s*=\s*([1-9][0-9]{4,})/i);
-        if (mAt) return mAt[1];
-        // 最后找裸数字（第一个连续 5+ 位数字）
-        const mNum = text.match(/([1-9][0-9]{4,})/);
-        if (mNum) return mNum[1];
-        return null;
-    }
-    
-    // 封装的消息处理函数
-    function processMessage(ctx, msg) {
-        if ((msg.message.includes(NON_COMMAND_KEYWORD) || extractFirstNumericId(msg.message || "") == "2322534068" || msg.messageType == "private")) {
-            if (globalThis.deepseekAIContextMap.has(ctx.player.userId)) {
-                let ai = globalThis.deepseekAIContextMap.get(ctx.player.userId);
-                ai.chat(msg.message, ctx, msg);
-            } else {
-                let ai = new DeepseekAI();
-                globalThis.deepseekAIContextMap.set(ctx.player.userId, ai);
-                ai.chat(msg.message, ctx, msg);
+        function extractFirstNumericId(text) {
+            if (!text) return null;
+            // 先找 QQ:12345
+            const mQQ = text.match(/QQ[:：]\s*([1-9][0-9]{4,})/i);
+            if (mQQ) return mQQ[1];
+            // 再找 CQ 或 at 格式里出现的数字，如 [CQ:at,qq=123]
+            const mAt = text.match(/qq\s*=\s*([1-9][0-9]{4,})/i);
+            if (mAt) return mAt[1];
+            // 最后找裸数字（第一个连续 5+ 位数字）
+            const mNum = text.match(/([1-9][0-9]{4,})/);
+            if (mNum) return mNum[1];
+            return null;
+        }
+
+        // 封装的消息处理函数
+        function processMessage(ctx, msg) {
+            if ((msg.message.includes(NON_COMMAND_KEYWORD) || extractFirstNumericId(msg.message || "") == "2322534068" || msg.messageType == "private")) {
+                if (globalThis.deepseekAIContextMap.has(ctx.player.userId)) {
+                    let ai = globalThis.deepseekAIContextMap.get(ctx.player.userId);
+                    ai.chat(msg.message, ctx, msg);
+                } else {
+                    let ai = new DeepseekAI();
+                    globalThis.deepseekAIContextMap.set(ctx.player.userId, ai);
+                    ai.chat(msg.message, ctx, msg);
+                }
             }
         }
     }
-}
 }
 
 
