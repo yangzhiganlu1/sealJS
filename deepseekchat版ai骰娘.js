@@ -183,7 +183,7 @@ if (!seal.ext.find('deepseekai')) {
 
         // 封装的消息处理函数
         function processMessage(ctx, msg) {
-            if ((msg.message.includes(NON_COMMAND_KEYWORD) || extractFirstNumericId(msg.message || "") == "2322534068" || msg.messageType == "private")) {
+            if ((msg.message.includes(NON_COMMAND_KEYWORD) || extractFirstNumericId(msg.message || "") == normalizeUid(ctx.endPoint.userId) || msg.messageType == "private")) {
                 if (globalThis.deepseekAIContextMap.has(ctx.player.userId)) {
                     let ai = globalThis.deepseekAIContextMap.get(ctx.player.userId);
                     ai.chat(msg.message, ctx, msg);
