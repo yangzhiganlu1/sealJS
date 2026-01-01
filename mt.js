@@ -1130,6 +1130,74 @@
                 }
             }
 
+            const cmdIncomeRanking = seal.ext.newCmdItemInfo();
+            cmdIncomeRanking.name = "赚钱排行"; 
+            cmdIncomeRanking.help = `.排行 help，需要手动 @小咪啪Kira /升级鱼塘9999999 来记录，以下是指令格式，qq号不填默认自己的：
+    .排行 day             【显示赚钱日榜】
+    .排行 week            【显示赚钱周榜】
+    .排行 clear      【！！！清空！！！所有！！！记录！！！】
+    `;
+            cmdIncomeRanking.solve = (ctx,msg,cmdArgs) => {
+                try {
+                    const arg1 = cmdArgs.getArgN(1) || "";
+                    const sub = ("" + arg1).trim().toLowerCase();
+                    const fromUserGroupID = normalizeUid(ctx.group.groupId);
+                    if (fromUserGroupID != "1041391088"){
+                        return;
+                    }
+                    const uid = normalizeUid(msg.sender.userId);
+                    let dict = storageGet(ext,STORAGE_KEY_OTHERS_MONEY,{});
+                    let arrMoneyBot = storageGet(ext,STORAGE_KEY_MONEY,[]);
+                    dict[normalizeUid(ctx.endPoint.userId)] = arrMoneyBot;
+                    switch (sub) {
+                        case "day":{
+                            const now = Date.now();
+                            const today = new Date().setHours(0,0,0,0);
+                            const ytd = today - 86400000;
+                            let ranking = [];
+                            for (const player in dict){
+                                const arrMoney = dict[player];
+                                let arrMoneyYtd = arrMoney.filter(Money => Money.ts >= ytd && Money.ts < today);
+                                let arrMoneyToday = arrMoney.filter(Money => Money.ts >= today && Money.ts < now);
+                                if (arrMoneyYtd.length == 0 || arrMoneyToday.length == 0){
+                                    continue;
+                                }
+                                arrMoneyYtd.sort((a,b) => a.ts - b.ts);
+                                arrMoneyToday.sort((a,b) => b.ts - a.ts);
+                                const value = (arrMoneyToday[0].value - arrMoneyYtd[0].value)*86400/(arrMoneyToday[0].ts - arrMoneyYtd[0].ts);
+                                record = {
+                                    uid:player,
+                                    value:value
+                                }
+                                ranking.push(record);
+                            }
+                            if (ranking.length){
+                                ranking.sort((a,b) => b.value - a.value);
+                                output = "今日排名:\n";
+                                for (let i = 0 ; i < ranking.length ; ++i){
+                                    output += `${i+1}.${ranking[i].uid} : ${Math.round(ranking[i].value)}\n`
+                                }
+                                output = output.slice(0,-1);
+                            } else {
+                                seal.replyToSender(ctx,msg,"今天还没有足够的记录~");
+                            }
+                        }
+                        case "week":{
+                            seal.replyToSender(ctx,msg,"还没写!");
+                        }
+                        case "help":{
+                            const ret = seal.ext.newCmdExecuteResult(true);
+                            ret.showHelp = true;
+                            return ret;
+                        }
+                        default:
+                            break;
+                    }
+                } catch(e) {
+                    console.log(e);
+                }
+            }
+
         
             ext.cmdMap['赞助'] = cmdThx;
             ext.cmdMap['雪'] = cmdXueWang;
@@ -1139,7 +1207,8 @@
             ext.cmdMap['赚钱'] = cmdOthersMoney;
             ext.cmdMap['抛竿记录'] = cmdFishingRecord;
             ext.cmdMap['体力'] = cmdStamina;
-
+            ext.cmdMap['排行'] = cmdIncomeRanking;
+            ext.cmdMap['排名'] = cmdIncomeRanking;
 
 
             seal.ext.register(ext)
