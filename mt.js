@@ -975,6 +975,7 @@
                                 output += '\n';
                             }
                             seal.replyToSender(ctx,msg,output);
+                            storageSet(ext,STORAGE_KEY_TIMEOUT,recentRecords);
                             break;
                         }
                         default:
