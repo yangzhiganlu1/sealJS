@@ -18,7 +18,7 @@
     const STORAGE_KEY_FISH_CD_TIMERS = "fish_cd_timers";
     const STORAGE_KEY_MONEY = "money_";
     const STORAGE_KEY_OTHERS_MONEY = "others_money";
-    const STORAGE_KEY_TIMEOUT = "timeout_record";
+    const STORAGE_KEY_TIMEOUT = "timeout_record1";
     const STORAGE_KEY_STAMINA = "stamina";
     const AutoReplyRulesLocal = [
         JSON.stringify({
@@ -552,19 +552,27 @@
      *@param {number} timeout - ms
      */
     function setTimeoutFishing(ext,ctx,msg,timeout){
-        let record = storageGet(ext,STORAGE_KEY_TIMEOUT,[]);
+        let records = storageGet(ext,STORAGE_KEY_TIMEOUT,[]);
         const now = new Date();
         if (timeout > 0){
             const target = new Date(now.getTime() + timeout);
-            record.push(`from ${now.toLocaleTimeString()} | target ${target.toLocaleTimeString()}`)
+            const record = {
+                start: now.getTime(),
+                target: target.getTime()
+            };
+            records.push(record);
             setTimeout(() => {
                 seal.replyToSender(ctx,msg,`[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`)
             }, timeout);
         } else if (timeout == 0) {
-            record.push(`from ${now.toLocaleTimeString()} | immediately`)
-            seal.replyToSender(ctx,msg,`[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`)
+            const record = {
+                start: now.getTime(),
+                target: now.getTime()
+            };
+            records.push(record);
+            seal.replyToSender(ctx,msg,`[CQ:at,qq=${FISH_BOT_USERID}] /抛竿丰收`);
         }
-        storageSet(ext,STORAGE_KEY_TIMEOUT,record);
+        storageSet(ext,STORAGE_KEY_TIMEOUT,records);
     }
 
     function clearTimerId(ext){
@@ -944,14 +952,26 @@
                             return ret;
                         }
                         case "":{
-                            const record = storageGet(ext,STORAGE_KEY_TIMEOUT,[]);
-                            if (record.length == 0){
+                            const records = storageGet(ext,STORAGE_KEY_TIMEOUT,[]);
+                            if (records.length == 0){
                                 seal.replyToSender(ctx,msg,`没有记录`)
                                 break;
                             } 
+                            const now = Date.now();
+                            const eightHoursAgo = now - 28800000;
+                            const recentRecords = records.filter(record => record.start >= eightHoursAgo);
+                            const beforeRecords = recentRecords.filet(record => record.target <= now);
+                            const afterRecords = recentRecords.filet(record => record.target > now);
                             let output = '';
-                            for (let i = 0 ; i < record.length ; ++i){
-                                output += record[i];
+                            for (let i = 0 ; i < beforeRecords.length ; ++i){
+                                const record = beforeRecords[i];
+                                output += `from ${new Date(record.start).toLocaleTimeString()} | ${record.start == record.target ? "immediately":`target ${new Date(record.target).toLocaleTimeString()}`}`;
+                                output += '\n';
+                            }
+                            output += '————————';
+                            for (let i = 0 ; i < afterRecords.length ; ++i){
+                                const record = afterRecords[i];
+                                output += `from ${new Date(record.start).toLocaleTimeString()} | target ${new Date(record.target).toLocaleTimeString()}`;
                                 output += '\n';
                             }
                             seal.replyToSender(ctx,msg,output);
