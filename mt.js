@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         早安/赞助/呼风唤雨/赚钱/收入/雪王插件
 // @author       雪王 & 蜜桃
-// @version      1.0.1
-// @description  1225,修改:圣诞为什么要加班，修复了好多好多未知问题
+// @version      1.0.2
+// @description  0102,修改:修复了这一行没有更新的bug | 新增了日榜 | 优化了抛竿记录
 // @timestamp    1766544987
 // @license      MIT
 // ==/UserScript==
@@ -11,7 +11,7 @@
 
 (() => {
 
-    const VERSION = "1.0.1";
+    const VERSION = "1.0.2";
     const STORAGE_KEY_Morning = "morning";
     const STORAGE_KEY_ERROR = "error";
     const STORAGE_KEY_SPONSOR = "sponsor";
